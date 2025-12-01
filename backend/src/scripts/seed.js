@@ -94,6 +94,7 @@ const seed = async () => {
     // Create offerings for term 2025S1
     const term = '2025S1';
     const year = 2025;
+    const mainLecturer = lecturers[0]; // Dr. John Smith
 
     const offerings = [
       {
@@ -101,7 +102,7 @@ const seed = async () => {
         term,
         year,
         capacity: 50,
-        assignedLecturerIds: [lecturers[0]._id],
+        assignedLecturerIds: [mainLecturer._id],
         assessments: [
           { name: 'CAT', weight: 30, maxScore: 30 },
           { name: 'Exam', weight: 70, maxScore: 70 }
@@ -112,7 +113,7 @@ const seed = async () => {
         term,
         year,
         capacity: 40,
-        assignedLecturerIds: [lecturer._id],
+        assignedLecturerIds: [mainLecturer._id],
         assessments: [
           { name: 'Assignment', weight: 20, maxScore: 20 },
           { name: 'CAT', weight: 30, maxScore: 30 },
@@ -124,7 +125,7 @@ const seed = async () => {
         term,
         year,
         capacity: 35,
-        assignedLecturerIds: [lecturer._id],
+        assignedLecturerIds: [mainLecturer._id],
         assessments: [
           { name: 'Project', weight: 25, maxScore: 25 },
           { name: 'CAT', weight: 25, maxScore: 25 },
@@ -136,7 +137,7 @@ const seed = async () => {
         term,
         year,
         capacity: 30,
-        assignedLecturerIds: [lecturer._id],
+        assignedLecturerIds: [mainLecturer._id],
         assessments: [
           { name: 'CAT', weight: 30, maxScore: 30 },
           { name: 'Exam', weight: 70, maxScore: 70 }
@@ -147,7 +148,7 @@ const seed = async () => {
         term,
         year,
         capacity: 60,
-        assignedLecturerIds: [lecturer._id],
+        assignedLecturerIds: [mainLecturer._id],
         assessments: [
           { name: 'CAT', weight: 30, maxScore: 30 },
           { name: 'Exam', weight: 70, maxScore: 70 }
@@ -155,8 +156,21 @@ const seed = async () => {
       }
     ];
 
-    await CourseOffering.insertMany(offerings);
+    const createdOfferings = await CourseOffering.insertMany(offerings);
     console.log('✓ Course offerings created');
+
+    // Enroll student in all courses
+    const Enrollment = require('../models/Enrollment');
+    await Enrollment.deleteMany({}); // Clear existing enrollments
+
+    const enrollmentData = createdOfferings.map(offering => ({
+      studentId: student._id,
+      offeringId: offering._id,
+      enrolledAt: new Date()
+    }));
+
+    await Enrollment.insertMany(enrollmentData);
+    console.log('✓ Student enrolled in all courses');
 
     console.log('\n✓ Seeding completed successfully!');
     console.log('\nLogin credentials:');

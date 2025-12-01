@@ -4,7 +4,20 @@ const {
   createCourse,
   createOffering,
   updateAssessments,
-  getConsolidatedMarksheet
+  getConsolidatedMarksheet,
+  getUsers,
+  createUser,
+  updateUser,
+  deleteUser,
+  getAllMarks,
+  getIssues,
+  updateIssueStatus,
+  sendMessageToLecturer,
+  assignLecturerToCourse,
+  registerStudentToCourse,
+  deleteRegistration,
+  updateRegistrationLecturer,
+  resetDatabase
 } = require('../controllers/admin.controller');
 const authenticate = require('../middleware/auth');
 const requireRole = require('../middleware/roles');
@@ -51,6 +64,27 @@ router.put('/offerings/:id/assessments',
 router.get('/marksheets/consolidated',
   getConsolidatedMarksheet
 );
+
+// User Management
+router.get('/users', getUsers);
+router.post('/users', createUser);
+router.put('/users/:id', updateUser);
+router.delete('/users/:id', deleteUser);
+
+// Marks
+router.get('/marks', getAllMarks);
+
+// Issues
+router.get('/issues', getIssues);
+router.put('/issues/:id/status', updateIssueStatus);
+router.post('/issues/message', sendMessageToLecturer);
+
+// Registrations & Assignments
+router.post('/assign-lecturer', assignLecturerToCourse);
+router.post('/register-student', registerStudentToCourse);
+router.delete('/registrations/:id', deleteRegistration);
+router.put('/registrations/:id/lecturer', updateRegistrationLecturer);
+router.post('/reset-db', resetDatabase);
 
 module.exports = router;
 

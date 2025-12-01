@@ -3,7 +3,8 @@ const {
   getMyOfferings,
   getOfferingStudents,
   postMarks,
-  exportCSV
+  exportCSV,
+  getMarks
 } = require('../controllers/lecturer.controller');
 const authenticate = require('../middleware/auth');
 const requireRole = require('../middleware/roles');
@@ -15,6 +16,7 @@ router.use(requireRole('lecturer'));
 
 router.get('/offerings', getMyOfferings);
 router.get('/offerings/:id/students', getOfferingStudents);
+router.get('/offerings/:id/marks', getMarks);
 router.post('/marks/batch', postMarks);
 router.get('/offerings/:id/marks/export', exportCSV);
 

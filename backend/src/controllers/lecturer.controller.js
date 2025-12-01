@@ -9,8 +9,8 @@ const getMyOfferings = async (req, res) => {
     const offerings = await CourseOffering.find({
       assignedLecturerIds: req.user._id
     })
-    .populate('courseId')
-    .populate('assignedLecturerIds', 'fullName staffNo');
+      .populate('courseId')
+      .populate('assignedLecturerIds', 'fullName staffNo');
 
     res.json({
       success: true,
@@ -168,11 +168,37 @@ const exportCSV = async (req, res) => {
   }
 };
 
+const getMarks = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // Verify lecturer is assigned
+    const offering = await CourseOffering.findById(id);
+    if (!offering) {
+      return res.status(404).json({ success: false, error: 'Offering not found' });
+    }
+
+    if (!offering.assignedLecturerIds.some(l => l.toString() === req.user._id.toString())) {
+      return res.status(403).json({ success: false, error: 'Not assigned to this offering' });
+    }
+
+    const marks = await Mark.find({ offeringId: id });
+
+    res.json({
+      success: true,
+      data: marks
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+};
+
 module.exports = {
   getMyOfferings,
   getOfferingStudents,
   postMarks,
-  exportCSV
+  exportCSV,
+  getMarks
 };
 
 
