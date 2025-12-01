@@ -43,17 +43,31 @@ const seed = async () => {
     });
     console.log('✓ Admin created:', admin.email);
 
-    // Create lecturer
+    // Create lecturers
     const lecturerPasswordHash = await bcrypt.hash('Passw0rd!', 10);
-    const lecturer = await User.create({
-      email: 'lecturer@example.com',
-      passwordHash: lecturerPasswordHash,
-      fullName: 'Dr. John Smith',
-      role: 'lecturer',
-      staffNo: 'LEC001'
-    });
-    console.log('✓ Lecturer created:', lecturer.email);
 
+    const lecturerData = [
+      { email: 'lecturer@example.com', fullName: 'Dr. John Smith', staffNo: 'LEC001' },
+      { email: 'sudi.abdi@example.com', fullName: 'Sudi Abdi', staffNo: 'LEC002' },
+      { email: 'nasra.nur@example.com', fullName: 'Nasra Nur', staffNo: 'LEC003' },
+      { email: 'kukunda.linda@example.com', fullName: 'Kukunda Linda', staffNo: 'LEC004' },
+      { email: 'lovin.mucoki@example.com', fullName: 'Lovin Mucoki', staffNo: 'LEC005' },
+      { email: 'rabira.ammsalu@example.com', fullName: 'Rabira Ammsalu', staffNo: 'LEC006' },
+      { email: 'austin.musebe@example.com', fullName: 'Austin Musebe', staffNo: 'LEC007' }
+    ];
+
+    const lecturers = [];
+    for (const lec of lecturerData) {
+      const created = await User.create({
+        email: lec.email,
+        passwordHash: lecturerPasswordHash,
+        fullName: lec.fullName,
+        role: 'lecturer',
+        staffNo: lec.staffNo
+      });
+      lecturers.push(created);
+      console.log('✓ Lecturer created:', created.email);
+    }
     // Create student
     const studentPasswordHash = await bcrypt.hash('Passw0rd!', 10);
     const student = await User.create({
@@ -87,7 +101,7 @@ const seed = async () => {
         term,
         year,
         capacity: 50,
-        assignedLecturerIds: [lecturer._id],
+        assignedLecturerIds: [lecturers[0]._id],
         assessments: [
           { name: 'CAT', weight: 30, maxScore: 30 },
           { name: 'Exam', weight: 70, maxScore: 70 }

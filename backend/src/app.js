@@ -9,6 +9,11 @@ const studentRoutes = require('./routes/student.routes');
 const lecturerRoutes = require('./routes/lecturer.routes');
 
 const issueRoutes = require('./routes/issue.routes');
+
+// Legacy Routes
+const legacyStudentRoutes = require('./legacy/routes/studentRoutes');
+const legacyLecturerRoutes = require('./legacy/routes/lecturerRoutes');
+const legacyIssueRoutes = require('./legacy/routes/issueRoutes');
 const cors = require('cors');
 
 const app = express();
@@ -24,6 +29,11 @@ app.use('/admin', adminRoutes);
 app.use('/student', studentRoutes);
 app.use('/lecturer', lecturerRoutes);
 app.use('/issues', issueRoutes);
+
+// Legacy API Mounts
+app.use('/api/students', legacyStudentRoutes);
+app.use('/api/lecturers', legacyLecturerRoutes);
+app.use('/api/issues', legacyIssueRoutes);
 
 // Health check
 app.get('/', (req, res) => {
