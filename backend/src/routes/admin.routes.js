@@ -4,13 +4,8 @@ const {
   createCourse,
   createOffering,
   updateAssessments,
-  getConsolidatedMarksheet,
-  getMissingMarks
+  getConsolidatedMarksheet
 } = require('../controllers/admin.controller');
-const {
-  getAllIssues,
-  updateIssueStatus
-} = require('../controllers/issue.controller');
 const authenticate = require('../middleware/auth');
 const requireRole = require('../middleware/roles');
 const validate = require('../middleware/validate');
@@ -57,23 +52,7 @@ router.get('/marksheets/consolidated',
   getConsolidatedMarksheet
 );
 
-router.get('/marks/missing',
-  getMissingMarks
-);
-
-// Issue routes
-router.get('/issues', getAllIssues);
-router.put('/issues/:id/status',
-  [
-    body('status').isIn(['pending', 'in_progress', 'resolved', 'rejected']),
-    body('adminResponse').optional().trim()
-  ],
-  validate,
-  updateIssueStatus
-);
-
 module.exports = router;
-
 
 
 
