@@ -1,6 +1,47 @@
 const Course = require('../models/Course');
 const CourseOffering = require('../models/CourseOffering');
 const gradingService = require('../services/grading.service');
+const User = require('../models/User');
+
+// ========================================================
+// Get all users (excluding passwords)
+const getUsers = async (req, res) => {
+  try {
+    const users = await User.find({}, '-password').sort({ createdAt: -1 });
+    
+    res.json({
+      success: true,
+      data: users
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+};
+
+// Get all lecturers
+const getLecturers = async (req, res) => {
+  try {
+    const lecturers = await User.find(
+      { role: 'lecturer' }, 
+      '-password'
+    ).sort({ fullName: 1 });
+    
+    res.json({
+      success: true,
+      data: lecturers
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+};
+
+// =======================================================================================
 
 const createCourse = async (req, res) => {
   try {
@@ -116,13 +157,13 @@ const getConsolidatedMarksheet = async (req, res) => {
   }
 };
 
+// ========================================================
+// MAKE SURE ALL FUNCTIONS ARE EXPORTED
 module.exports = {
+  getUsers,
+  getLecturers,
   createCourse,
   createOffering,
   updateAssessments,
   getConsolidatedMarksheet
 };
-
-
-
-

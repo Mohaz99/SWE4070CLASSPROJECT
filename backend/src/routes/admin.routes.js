@@ -1,6 +1,10 @@
 const express = require('express');
 const { body } = require('express-validator');
 const {
+  // Add the new functions
+  getUsers,
+  getLecturers,
+  
   createCourse,
   createOffering,
   updateAssessments,
@@ -12,6 +16,8 @@ const validate = require('../middleware/validate');
 
 const router = express.Router();
 
+router.get('/users', getUsers);
+router.get('/users/lecturers', getLecturers);
 router.use(authenticate);
 router.use(requireRole('admin'));
 
