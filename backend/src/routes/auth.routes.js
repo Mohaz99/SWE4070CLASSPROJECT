@@ -12,7 +12,15 @@ router.post('/register',
     body('fullName').trim().notEmpty(),
     body('role').isIn(['student', 'lecturer', 'admin']),
     body('regNo').if(body('role').equals('student')).notEmpty(),
-    body('staffNo').if(body('role').isIn(['lecturer', 'admin'])).notEmpty()
+    body('staffNo')
+      .custom((value, { req }) => {
+        if (req.body.role === 'lecturer' || req.body.role === 'admin') {
+          if (!value || value.trim() === '') {
+            throw new Error('staffNo is required for lecturers and admins');
+          }
+        }
+        return true;
+      })
   ],
   validate,
   register
@@ -28,6 +36,7 @@ router.post('/login',
 );
 
 module.exports = router;
+
 
 
 
