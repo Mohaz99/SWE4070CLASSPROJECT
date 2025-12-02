@@ -37,7 +37,7 @@ const validateLecturerAssignment = async (offeringId, chosenLecturerId) => {
     throw new Error('Course offering not found');
   }
 
-  if (!offering.assignedLecturerIds.includes(chosenLecturerId)) {
+  if (!offering.assignedLecturerIds.some(l => l.toString() === chosenLecturerId.toString())) {
     throw new Error('Chosen lecturer is not assigned to this offering');
   }
 
@@ -49,6 +49,7 @@ module.exports = {
   countEnrollmentsForTerm,
   validateLecturerAssignment
 };
+
 
 
 

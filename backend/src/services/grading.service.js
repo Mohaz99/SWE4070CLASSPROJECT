@@ -60,6 +60,7 @@ const getFinals = async (term, year, options = {}) => {
     for (const assessment of offering.assessments) {
       const mark = studentMarks.find(m => m.assessmentId.equals(assessment._id));
       const score = mark ? mark.score : 0;
+      const isMissing = !mark; // Flag if mark is missing
       const percent = (score / assessment.maxScore) * assessment.weight;
       totalPercent += percent;
 
@@ -69,7 +70,8 @@ const getFinals = async (term, year, options = {}) => {
         score,
         maxScore: assessment.maxScore,
         weight: assessment.weight,
-        earnedPercent: percent
+        earnedPercent: percent,
+        isMissing // Flag to indicate if this mark is missing
       });
     }
 
@@ -170,10 +172,87 @@ const getConsolidatedMarksheet = async (term, year, options = {}) => {
   }
 };
 
+// Get missing marks report for admins
+const getMissingMarks = async (term, year, options = {}) => {
+  const { offeringId, studentId } = options;
+
+  // Find offerings
+  let filter = { term, year };
+  if (offeringId) filter._id = offeringId;
+
+  const offerings = await CourseOffering.find(filter)
+    .populate('courseId');
+
+  if (offerings.length === 0) {
+    return [];
+  }
+
+  const offeringIds = offerings.map(o => o._id);
+
+  // Find enrollments
+  let enrollmentFilter = { offeringId: { $in: offeringIds } };
+  if (studentId) enrollmentFilter.studentId = studentId;
+
+  const enrollments = await Enrollment.find(enrollmentFilter);
+  const studentIds = [...new Set(enrollments.map(e => e.studentId))];
+
+  // Get all marks
+  const marks = await Mark.find({
+    offeringId: { $in: offeringIds },
+    studentId: { $in: studentIds }
+  });
+
+  // Get student info
+  const students = await User.find({ _id: { $in: studentIds } });
+  const studentMap = new Map(students.map(s => [s._id.toString(), s]));
+
+  // Build missing marks report
+  const missingMarks = [];
+
+  for (const enrollment of enrollments) {
+    const offering = offerings.find(o => o._id.equals(enrollment.offeringId));
+    if (!offering) continue;
+
+    const student = studentMap.get(enrollment.studentId.toString());
+    if (!student) continue;
+
+    const studentMarks = marks.filter(m => 
+      m.studentId.equals(enrollment.studentId) && 
+      m.offeringId.equals(offering._id)
+    );
+
+    // Check each assessment for missing marks
+    for (const assessment of offering.assessments) {
+      const mark = studentMarks.find(m => m.assessmentId.equals(assessment._id));
+      
+      if (!mark) {
+        missingMarks.push({
+          studentId: enrollment.studentId,
+          studentName: student.fullName,
+          regNo: student.regNo,
+          offeringId: offering._id,
+          courseCode: offering.courseId.code,
+          courseName: offering.courseId.name,
+          assessmentId: assessment._id,
+          assessmentName: assessment.name,
+          maxScore: assessment.maxScore,
+          weight: assessment.weight,
+          term,
+          year
+        });
+      }
+    }
+  }
+
+  return missingMarks;
+};
+
 module.exports = {
   getFinals,
-  getConsolidatedMarksheet
+  getConsolidatedMarksheet,
+  getMissingMarks
 };
+
 
 
 

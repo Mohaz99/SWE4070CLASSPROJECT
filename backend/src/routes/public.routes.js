@@ -2,6 +2,7 @@ const express = require('express');
 const Course = require('../models/Course');
 const CourseOffering = require('../models/CourseOffering');
 const GradeScale = require('../models/GradeScale');
+const { ASSESSMENT_DEFAULTS } = require('../config/assessmentDefaults');
 
 const router = express.Router();
 
@@ -41,7 +42,24 @@ router.get('/grade-scales', async (req, res) => {
   }
 });
 
+router.get('/assessment-defaults', async (req, res) => {
+  try {
+    // Return a clean list of assessment defaults for frontend use
+    const defaults = {
+      'Assignment': 10,
+      'Quiz': 15,
+      'Project': 25,
+      'Midsem': 20,
+      'Endsem': 30
+    };
+    res.json({ success: true, data: defaults });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
 module.exports = router;
+
 
 
 
