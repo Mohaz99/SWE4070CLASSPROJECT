@@ -59,7 +59,7 @@ const exportToCSV = async (offeringId, format = 'csv') => {
   // Get grade scale for letter grade assignment
   const gradeScales = await GradeScale.find().sort({ maxPercent: -1 });
 
-  // Assign letter grades based on grade scale
+  // Assign letter grades based on grade scale from database
   for (const row of results) {
     const totalPercent = row['Total Percent'];
     let letter = 'F';
