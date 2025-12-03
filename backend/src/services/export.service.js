@@ -2,6 +2,7 @@ const Enrollment = require('../models/Enrollment');
 const CourseOffering = require('../models/CourseOffering');
 const Mark = require('../models/Mark');
 const User = require('../models/User');
+const GradeScale = require('../models/GradeScale');
 const gradingService = require('./grading.service');
 
 const exportToCSV = async (offeringId, format = 'csv') => {
@@ -52,16 +53,25 @@ const exportToCSV = async (offeringId, format = 'csv') => {
 
     row['Total Percent'] = Math.round(totalPercent * 100) / 100;
 
-    // Add letter grade (simple A-E scale)
-    let letter = 'F';
-    if (totalPercent >= 80) letter = 'A';
-    else if (totalPercent >= 70) letter = 'B';
-    else if (totalPercent >= 60) letter = 'C';
-    else if (totalPercent >= 50) letter = 'D';
-    else letter = 'F';
-    row['Grade'] = letter;
-
     results.push(row);
+  }
+
+  // Get grade scale for letter grade assignment
+  const gradeScales = await GradeScale.find().sort({ maxPercent: -1 });
+
+  // Assign letter grades based on grade scale
+  for (const row of results) {
+    const totalPercent = row['Total Percent'];
+    let letter = 'F';
+    
+    for (const grade of gradeScales) {
+      if (totalPercent >= grade.minPercent && totalPercent <= grade.maxPercent) {
+        letter = grade.letter;
+        break;
+      }
+    }
+    
+    row['Grade'] = letter;
   }
 
   // Convert to CSV

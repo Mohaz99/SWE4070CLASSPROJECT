@@ -20,13 +20,20 @@ const seed = async () => {
     await Course.deleteMany({});
     await User.deleteMany({});
 
-    // Create grade scales
+    // Create grade scales (USIU grading system)
     const gradeScales = [
-      { letter: 'A', minPercent: 80, maxPercent: 100, points: 4.0 },
-      { letter: 'B', minPercent: 70, maxPercent: 79, points: 3.0 },
-      { letter: 'C', minPercent: 60, maxPercent: 69, points: 2.0 },
-      { letter: 'D', minPercent: 50, maxPercent: 59, points: 1.0 },
-      { letter: 'E', minPercent: 0, maxPercent: 49, points: 0.0 }
+      { letter: 'A', minPercent: 90, maxPercent: 100, points: 4.0 },
+      { letter: 'A-', minPercent: 87, maxPercent: 89, points: 3.7 },
+      { letter: 'B+', minPercent: 84, maxPercent: 86, points: 3.3 },
+      { letter: 'B', minPercent: 80, maxPercent: 83, points: 3.0 },
+      { letter: 'B-', minPercent: 77, maxPercent: 79, points: 2.7 },
+      { letter: 'C+', minPercent: 74, maxPercent: 76, points: 2.3 },
+      { letter: 'C', minPercent: 70, maxPercent: 73, points: 2.0 },
+      { letter: 'C-', minPercent: 67, maxPercent: 69, points: 1.7 },
+      { letter: 'D+', minPercent: 64, maxPercent: 66, points: 1.3 },
+      { letter: 'D', minPercent: 62, maxPercent: 63, points: 1.0 },
+      { letter: 'D-', minPercent: 60, maxPercent: 61, points: 0.7 },
+      { letter: 'F', minPercent: 0, maxPercent: 59, points: 0.0 }
     ];
 
     await GradeScale.insertMany(gradeScales);
